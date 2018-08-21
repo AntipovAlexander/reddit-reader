@@ -3,9 +3,9 @@ package com.antipov.redditreader.ui.activity.main;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.FrameLayout;
-
 import com.antipov.redditreader.R;
 import com.antipov.redditreader.data.pojo.Child;
 import com.antipov.redditreader.ui.adapter.TopAdapter;
@@ -25,6 +25,7 @@ public class MainActivity extends BaseActivity implements MainView {
 
     @BindView(R.id.fl_progress) FrameLayout progress;
     @BindView(R.id.rv_tops) RecyclerView recyclerTop;
+    @BindView(R.id.toolbar) Toolbar toolbar;
 
     private TopAdapter mAdapter;
 
@@ -59,7 +60,10 @@ public class MainActivity extends BaseActivity implements MainView {
 
     @Override
     public void initToolbar() {
-
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() !=null) {
+            getSupportActionBar().setTitle(getString(R.string.app_name));
+        }
     }
 
     @Override
