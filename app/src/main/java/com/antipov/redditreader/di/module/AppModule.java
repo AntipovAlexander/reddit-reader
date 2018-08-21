@@ -3,6 +3,7 @@ package com.antipov.redditreader.di.module;
 import android.app.Application;
 import android.content.Context;
 
+import com.antipov.redditreader.data.repository.TopPostsRepository;
 import com.antipov.redditreader.di.ApplicationContext;
 import com.antipov.redditreader.utils.rx.AppSchedulerProvider;
 import com.antipov.redditreader.utils.rx.SchedulerProvider;
@@ -11,7 +12,9 @@ import dagger.Module;
 import dagger.Provides;
 
 /**
- * Created by AlexanderAntipov on 04.06.2018.
+ * Module for providing App dependencies
+ *
+ * Created by AlexanderAntipov on 21.08.2018.
  */
 
 @Module
@@ -36,19 +39,8 @@ public class AppModule {
         return this.mScheduleProvider;
     }
 
-
-//    @Provides
-//    public SharedPrefs provideSharedPrefs() {
-//        return new SharedPrefs(mApplication);
-//    }
-//
-//    @Provides
-//    public CurrentWallpaperPrefs provideCurrentWallpaperPrefs() {
-//        return new CurrentWallpaperPrefs(mApplication);
-//    }
-//
-//    @Provides
-//    public WallPaperSetter provideWallPaperSetter() {
-//        return new WallPaperSetter(mApplication);
-//    }
+    @Provides
+    public TopPostsRepository provideTopPostsRepository() {
+        return new TopPostsRepository();
+    }
 }

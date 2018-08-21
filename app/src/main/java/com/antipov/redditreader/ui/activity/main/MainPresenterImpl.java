@@ -13,16 +13,16 @@ public class MainPresenterImpl <V extends MainView, I extends MainInteractor>
     }
 
     @Override
-    public void getData() {
-        getInteractor().getData().subscribe(
-                integer -> {
-                    if (!isViewAttached()) return;
-                    getView().showData(integer);
-                },
-                throwable -> {
-                    if (!isViewAttached()) return;
-                    getView().showError(throwable.getMessage());
-                }
-        );
+    public void loadTopPosts(int limit) {
+        getInteractor().loadTopPosts(limit).subscribe(
+                    top -> {
+                        if (!isViewAttached()) return;
+                        "t".toString();
+                    },
+                    throwable -> {
+                        if (!isViewAttached()) return;
+                        getView().showError(throwable.getMessage());
+                    }
+                );
     }
 }

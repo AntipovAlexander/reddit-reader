@@ -1,9 +1,14 @@
 package com.antipov.redditreader.ui.activity.main;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.antipov.redditreader.R;
+import com.antipov.redditreader.di.ActivityContext;
+import com.antipov.redditreader.di.ApplicationContext;
 import com.antipov.redditreader.ui.base.BaseActivity;
 
 import javax.inject.Inject;
@@ -14,7 +19,7 @@ import butterknife.ButterKnife;
 public class MainActivity extends BaseActivity implements MainView {
 
     @Inject
-    MainPresenter<MainView, MainInteractor> mPresenter;
+    MainPresenter<MainView, MainInteractor> presenter;
 
     @BindView(R.id.tv_test)
     TextView textView;
@@ -23,8 +28,8 @@ public class MainActivity extends BaseActivity implements MainView {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getComponent().inject(this);
-        mPresenter.attachView(this);
-        mPresenter.getData();
+        presenter.attachView(this);
+        presenter.loadTopPosts(10);
     }
 
     @Override

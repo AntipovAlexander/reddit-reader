@@ -5,7 +5,14 @@ import com.antipov.redditreader.ui.activity.main.MainActivity;
 
 import dagger.Component;
 
-@Component(dependencies = AppComponent.class, modules = ActivityModule.class)
+/**
+ * Component for Activity inject-targets
+ *
+ * Created by AlexanderAntipov on 21.08.2018.
+ */
+@Component(
+        dependencies = AppComponent.class, // inheriting dependencies from AppModule.class
+        modules = ActivityModule.class)
 public interface ActivityComponent {
     void inject(MainActivity mainActivity);
 }
