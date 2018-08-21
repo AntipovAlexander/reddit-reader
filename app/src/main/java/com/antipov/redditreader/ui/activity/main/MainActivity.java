@@ -30,6 +30,7 @@ public class MainActivity extends BaseActivity implements MainView {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         getComponent().inject(this);
         presenter.attachView(this);
