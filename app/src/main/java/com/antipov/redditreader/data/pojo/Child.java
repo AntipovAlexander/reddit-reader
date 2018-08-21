@@ -4,10 +4,10 @@ import com.google.gson.annotations.SerializedName;
 
 public class Child {
     @SerializedName("kind")
-    public String kind;
+    private String kind;
 
     @SerializedName("data")
-    public Content data;
+    private Content data;
 
     public String getKind() {
         return kind;

@@ -7,19 +7,19 @@ import java.util.List;
 public class Data {
 
     @SerializedName("modhash")
-    public String modhash;
+    private String modhash;
 
     @SerializedName("dist")
-    public Integer dist;
+    private Integer dist;
 
     @SerializedName("children")
-    public List<Child> children = null;
+    private List<Child> children = null;
 
     @SerializedName("after")
-    public String after;
+    private String after;
 
     @SerializedName("before")
-    public Object before;
+    private Object before;
 
     public String getModhash() {
         return modhash;

@@ -42,6 +42,7 @@ ext {
     constraintLayout = '1.1.2'
     espressoCore = '3.0.2'
     mockito = '2.7.1'
+    glide = '4.4.0'
     materialDialogCore = 'core:0.9.6.0'
     materialDialogCommon = 'commons:0.9.6.0'
 }

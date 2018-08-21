@@ -1,5 +1,8 @@
 package com.antipov.redditreader.data.pojo;
 
+import android.support.annotation.Nullable;
+import android.util.Log;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -7,28 +10,53 @@ import java.util.List;
 public class Content {
 
     @SerializedName("author")
-    public String author;
+    private String author;
 
     @SerializedName("title")
-    public String title;
+    private String title;
 
     @SerializedName("subreddit_name_prefixed")
-    public String subredditName;
+    private String subredditName;
 
     @SerializedName("score")
-    public int score;
+    private int score;
 
     @SerializedName("thumbnail")
-    public String thumbnail;
+    private String thumbnail;
 
     @SerializedName("num_comments")
-    public int numComments;
+    private int numComments;
 
     @SerializedName("url")
-    public String url;
+    private String url;
 
     @SerializedName("created_utc")
-    public long createdUtc;
+    private long createdUtc;
+
+    @SerializedName("preview")
+    private Preview preview;
+
+    @Nullable
+    public List<Resolution> getImagesFromPreview() {
+        try {
+            return preview.getImages().get(0).getResolutions();
+        } catch (NullPointerException e) {
+            // return null if one of these elements in chain is null
+            Log.e(getClass().getSimpleName(), e.getLocalizedMessage());
+            return null;
+        }
+    }
+
+    @Nullable
+    public Resolution getSource() {
+        try {
+            return preview.getImages().get(0).getSource();
+        } catch (NullPointerException e) {
+            // return null if one of these elements in chain is null
+            Log.e(getClass().getSimpleName(), e.getLocalizedMessage());
+            return null;
+        }
+    }
 
 
     public String getAuthor() {
