@@ -7,7 +7,7 @@ public class Child {
     public String kind;
 
     @SerializedName("data")
-    public Object data;
+    public Content data;
 
     public String getKind() {
         return kind;
@@ -17,11 +17,11 @@ public class Child {
         this.kind = kind;
     }
 
-    public Object getData() {
+    public Content getData() {
         return data;
     }
 
-    public void setData(Object data) {
+    public void setData(Content data) {
         this.data = data;
     }
 }
