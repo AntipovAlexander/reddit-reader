@@ -16,7 +16,6 @@ import com.antipov.redditreader.data.pojo.Child;
 import com.antipov.redditreader.data.pojo.Content;
 import com.antipov.redditreader.data.pojo.Resolution;
 import com.antipov.redditreader.utils.NumberFormatter;
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 
 import org.ocpsoft.prettytime.PrettyTime;
@@ -37,15 +36,17 @@ public class TopAdapter extends RecyclerView.Adapter<TopAdapter.ViewHolder> {
     private final List<Child> model;
     private final TopAdapterListener clickListener;
     private final int DESIRED_HEIGHT = 600;
+    private final RequestManager requestManager;
     private String after;
     private boolean isLastPage = false;
     private boolean isLoading = false;
 
-    public TopAdapter(Context context, TopAdapterListener clickListener, List<Child> model, String after) {
+    public TopAdapter(Context context, TopAdapterListener clickListener, RequestManager requestManager, List<Child> model, String after) {
         this.model = model;
         this.clickListener = clickListener;
         this.context = context;
         this.after = after;
+        this.requestManager = requestManager;
     }
 
     @NonNull
@@ -53,7 +54,18 @@ public class TopAdapter extends RecyclerView.Adapter<TopAdapter.ViewHolder> {
     public TopAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
         View view = inflater.inflate(R.layout.recycler_item_post, viewGroup, false);
-        return new ViewHolder(view);
+        ViewHolder vh = new ViewHolder(view);
+        // click listener
+        view.setOnClickListener(v -> {
+                int pos = vh.getAdapterPosition();
+                if (pos != RecyclerView.NO_POSITION) {
+                    clickListener.onRecyclerItemClicked(
+                            BASE_URL + model.get(pos).getData().getPermalink()
+                    );
+                }
+            }
+        );
+        return vh;
     }
 
     @Override
@@ -97,10 +109,9 @@ public class TopAdapter extends RecyclerView.Adapter<TopAdapter.ViewHolder> {
                 // https://github.com/bumptech/glide/issues/1591
                 viewHolder.thumbnail.getLayoutParams().height = desiredResolution.getHeight();
                 viewHolder.thumbnail.getLayoutParams().width = desiredResolution.getWidth();
-                RequestManager glide = Glide.with(context);
                 // unescaping url to avoid 404. Reddit returns weird escaped links to images.
                 String unescapedUrl = Html.fromHtml(desiredResolution.getUrl()).toString();
-                glide
+                requestManager
                         .load(unescapedUrl)
                         .into(viewHolder.thumbnail);
             }
@@ -108,11 +119,6 @@ public class TopAdapter extends RecyclerView.Adapter<TopAdapter.ViewHolder> {
             // gone thumb if don`t have an image
             viewHolder.thumbnail.setVisibility(View.GONE);
         }
-
-        // click listener
-        viewHolder.itemView.setOnClickListener(view ->
-            clickListener.onRecyclerItemClicked(BASE_URL + post.getPermalink())
-        );
     }
 
     @Override
@@ -149,7 +155,13 @@ public class TopAdapter extends RecyclerView.Adapter<TopAdapter.ViewHolder> {
         this.after = after;
         this.model.addAll(model);
         notifyItemRangeInserted(this.model.size() - model.size(), model.size());
+    }
 
+    @Override
+    public void onViewRecycled(@NonNull ViewHolder holder) {
+        requestManager.clear(holder.thumbnail);
+        holder.thumbnail.setImageDrawable(null);
+        super.onViewRecycled(holder);
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

@@ -12,6 +12,8 @@ import com.antipov.redditreader.R;
 import com.antipov.redditreader.data.pojo.Child;
 import com.antipov.redditreader.ui.adapter.TopAdapter;
 import com.antipov.redditreader.ui.base.BaseActivity;
+import com.antipov.redditreader.utils.GlideApp;
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -84,7 +86,7 @@ public class MainActivity extends BaseActivity implements MainView, TopAdapter.T
     public void renderList(List<Child> model, String after) {
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         recyclerTop.setLayoutManager(mLayoutManager);
-        adapter = new TopAdapter(this, this, model, after);
+        adapter = new TopAdapter(this, this, GlideApp.with(this), model, after);
         recyclerTop.setLayoutManager(mLayoutManager);
         recyclerTop.setAdapter(adapter);
     }
