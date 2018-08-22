@@ -30,7 +30,7 @@ import butterknife.ButterKnife;
 import static com.antipov.redditreader.utils.common.Const.BASE_URL;
 import static com.antipov.redditreader.utils.common.Const.PAGE_SIZE;
 
-public class TopAdapter extends RecyclerView.Adapter<TopAdapter.ViewHolder> {
+public class TopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final Context context;
     private final List<Child> model;
@@ -51,25 +51,39 @@ public class TopAdapter extends RecyclerView.Adapter<TopAdapter.ViewHolder> {
 
     @NonNull
     @Override
-    public TopAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewLayout) {
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-        View view = inflater.inflate(R.layout.recycler_item_post, viewGroup, false);
-        ViewHolder vh = new ViewHolder(view);
-        // click listener
-        view.setOnClickListener(v -> {
-                int pos = vh.getAdapterPosition();
-                if (pos != RecyclerView.NO_POSITION) {
-                    clickListener.onRecyclerItemClicked(
-                            BASE_URL + model.get(pos).getData().getPermalink()
-                    );
-                }
-            }
-        );
-        return vh;
+        View view;
+        switch (viewLayout) {
+            case R.layout.recycler_item_loader:
+                view = inflater.inflate(R.layout.recycler_item_loader, viewGroup, false);
+                return new LoaderVH(view);
+            case R.layout.recycler_item_post:
+                view = inflater.inflate(R.layout.recycler_item_post, viewGroup, false);
+                PostVH vh = new PostVH(view);
+                // click listener
+                view.setOnClickListener(v -> {
+                            int pos = vh.getAdapterPosition();
+                            if (pos != RecyclerView.NO_POSITION) {
+                                clickListener.onRecyclerItemClicked(
+                                        BASE_URL + model.get(pos).getData().getPermalink()
+                                );
+                            }
+                        }
+                );
+                return vh;
+            default:
+                throw new RuntimeException("Passed wrong view type");
+        }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder vh, int i) {
+        // not binding for Loader
+        if (vh instanceof LoaderVH) return;
+
+        PostVH viewHolder = (PostVH) vh;
+
         // filling recycler item
         Content post = model.get(i).getData();
 
@@ -127,22 +141,38 @@ public class TopAdapter extends RecyclerView.Adapter<TopAdapter.ViewHolder> {
     }
 
     @Override
+    public int getItemViewType(int position) {
+        // returning layout as view types
+        if (position == model.size() - 1 && isLoading) {
+            return R.layout.recycler_item_loader;
+        } else {
+            return R.layout.recycler_item_post;
+        }
+    }
+
+    @Override
     public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
+        // pagination listening
         LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                int visibleItemCount = layoutManager.getChildCount();
-                int totalItemCount = layoutManager.getItemCount();
-                int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
-                if (!isLoading && !isLastPage) {
-                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
-                            && firstVisibleItemPosition >= 0
-                            && totalItemCount >= PAGE_SIZE) {
-                        isLoading = true;
-                        clickListener.onNextPageRequired(after);
+                if (layoutManager != null) {
+                    int visibleItemCount = layoutManager.getChildCount();
+                    int totalItemCount = layoutManager.getItemCount();
+                    int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+                    if (!isLoading && !isLastPage) {
+                        // end list reached - call new page
+                        if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+                                && firstVisibleItemPosition >= 0
+                                && totalItemCount >= PAGE_SIZE) {
+                            isLoading = true;
+                            model.add(new Child());
+                            notifyItemInserted(model.size());
+                            clickListener.onNextPageRequired(after);
+                        }
                     }
                 }
             }
@@ -153,18 +183,24 @@ public class TopAdapter extends RecyclerView.Adapter<TopAdapter.ViewHolder> {
         this.isLoading = false;
         this.isLastPage = isLastPage;
         this.after = after;
+        this.model.remove(this.model.size() - 1);
+        notifyItemRemoved(this.model.size() + 1);
         this.model.addAll(model);
         notifyItemRangeInserted(this.model.size() - model.size(), model.size());
     }
 
     @Override
-    public void onViewRecycled(@NonNull ViewHolder holder) {
-        requestManager.clear(holder.thumbnail);
-        holder.thumbnail.setImageDrawable(null);
-        super.onViewRecycled(holder);
+    public void onViewRecycled(@NonNull RecyclerView.ViewHolder vh) {
+        if (vh instanceof PostVH) {
+            PostVH holder = (PostVH) vh;
+            // clearing thumb for improving performance
+            requestManager.clear(holder.thumbnail);
+            holder.thumbnail.setImageDrawable(null);
+        }
+        super.onViewRecycled(vh);
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class PostVH extends RecyclerView.ViewHolder {
         @BindView(R.id.tv_subreddit) TextView subReddit;
         @BindView(R.id.tv_user) TextView userName;
         @BindView(R.id.tv_title) TextView title;
@@ -173,9 +209,15 @@ public class TopAdapter extends RecyclerView.Adapter<TopAdapter.ViewHolder> {
         @BindView(R.id.tv_comments_count) TextView commentsCount;
         @BindView(R.id.iv_thumb) ImageView thumbnail;
 
-        ViewHolder(@NonNull View itemView) {
+        PostVH(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+        }
+    }
+
+    class LoaderVH extends RecyclerView.ViewHolder {
+        public LoaderVH(@NonNull View itemView) {
+            super(itemView);
         }
     }
 
