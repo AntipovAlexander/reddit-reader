@@ -62,6 +62,9 @@ dependencies {
     // chrome tabs
     implementation "com.android.support:customtabs:$rootProject.appCompat"
 
+    // pretty time
+    implementation "org.ocpsoft.prettytime:prettytime:$rootProject.prettyTime"
+
     // material dialog
     implementation("com.afollestad.material-dialogs:$rootProject.materialDialogCore") {
         // excluding to resolve transitive dependencies conflicts

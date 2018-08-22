@@ -14,10 +14,15 @@ import com.antipov.redditreader.R;
 import com.antipov.redditreader.data.pojo.Child;
 import com.antipov.redditreader.data.pojo.Content;
 import com.antipov.redditreader.data.pojo.Resolution;
+import com.antipov.redditreader.utils.NumberFormatter;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 
+import org.ocpsoft.prettytime.PrettyTime;
+
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,6 +59,13 @@ public class TopAdapter extends RecyclerView.Adapter<TopAdapter.ViewHolder> {
         viewHolder.subReddit.setText(post.getSubredditName());
         viewHolder.userName.setText(context.getString(R.string.username_placeholder,post.getAuthor()));
         viewHolder.title.setText(post.getTitle());
+        viewHolder.score.setText(NumberFormatter.format(post.getScore()));
+        viewHolder.commentsCount.setText(NumberFormatter.format(post.getNumComments()));
+
+        // set date
+        Date date = new Date(post.getCreatedUtc() * 1000);
+        PrettyTime prettyTime = new PrettyTime(new Locale("en"));
+        viewHolder.time.setText(prettyTime.format(date));
 
         // images
         List<Resolution> resolutions = post.getImagesFromPreview();
@@ -87,14 +99,14 @@ public class TopAdapter extends RecyclerView.Adapter<TopAdapter.ViewHolder> {
                         .into(viewHolder.thumbnail);
             }
         } else {
-            // gone thumb if dont have an image
+            // gone thumb if don`t have an image
             viewHolder.thumbnail.setVisibility(View.GONE);
         }
 
         // click listener
-        viewHolder.itemView.setOnClickListener(view -> {
-            clickListener.onRecyclerItemClicked(BASE_URL + post.getPermalink());
-        });
+        viewHolder.itemView.setOnClickListener(view ->
+            clickListener.onRecyclerItemClicked(BASE_URL + post.getPermalink())
+        );
     }
 
     @Override
@@ -106,6 +118,9 @@ public class TopAdapter extends RecyclerView.Adapter<TopAdapter.ViewHolder> {
         @BindView(R.id.tv_subreddit) TextView subReddit;
         @BindView(R.id.tv_user) TextView userName;
         @BindView(R.id.tv_title) TextView title;
+        @BindView(R.id.tv_time) TextView time;
+        @BindView(R.id.tv_likes_count) TextView score;
+        @BindView(R.id.tv_comments_count) TextView commentsCount;
         @BindView(R.id.iv_thumb) ImageView thumbnail;
 
         ViewHolder(@NonNull View itemView) {
