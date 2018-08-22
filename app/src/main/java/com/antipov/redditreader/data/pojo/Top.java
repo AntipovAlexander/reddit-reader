@@ -18,6 +18,7 @@ public class Top {
     public static Top getForTest() {
         Top t = new Top();
         Data d = new Data();
+        d.setAfter("after");
         List<Child> children = new ArrayList<>();
         children.add(new Child());
         d.setChildren(children);

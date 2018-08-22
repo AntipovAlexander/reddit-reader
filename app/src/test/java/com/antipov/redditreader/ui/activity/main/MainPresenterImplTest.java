@@ -41,7 +41,7 @@ public class MainPresenterImplTest {
                 .loadTopPosts(limit);
         presenter.loadTopPosts(limit);
         Mockito.verify(mockedView).showLoadingFullscreen();
-        Mockito.verify(mockedView).renderList(ArgumentMatchers.anyList(), model.getData().getAfter());
+        Mockito.verify(mockedView).renderList(ArgumentMatchers.anyList(), ArgumentMatchers.anyString());
         Mockito.verify(mockedView).hideLoadingFullscreen();
         Mockito.verifyNoMoreInteractions(mockedView);
     }
