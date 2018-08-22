@@ -1,6 +1,8 @@
 package com.antipov.redditreader.ui.activity.main;
 
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.customtabs.CustomTabsIntent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -18,7 +20,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends BaseActivity implements MainView {
+public class MainActivity extends BaseActivity implements MainView, TopAdapter.OnRecyclerItemClicked {
 
     @Inject
     MainPresenter<MainView, MainInteractor> presenter;
@@ -80,7 +82,7 @@ public class MainActivity extends BaseActivity implements MainView {
     public void renderList(List<Child> model) {
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         recyclerTop.setLayoutManager(mLayoutManager);
-        mAdapter = new TopAdapter(this, model);
+        mAdapter = new TopAdapter(this, this, model);
         recyclerTop.setLayoutManager(mLayoutManager);
         recyclerTop.setAdapter(mAdapter);
     }
@@ -88,6 +90,19 @@ public class MainActivity extends BaseActivity implements MainView {
     @Override
     public void showError(String err) {
 
+    }
+
+    @Override
+    public void onRecyclerItemClicked(String url) {
+        presenter.onRecyclerClicked(url);
+    }
+
+    @Override
+    public void startChromeTab(String url) {
+        CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
+        builder.setToolbarColor(getResources().getColor(R.color.primaryColor));
+        CustomTabsIntent customTabsIntent = builder.build();
+        customTabsIntent.launchUrl(this, Uri.parse(url));
     }
 
     @Override

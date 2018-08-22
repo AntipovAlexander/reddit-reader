@@ -33,4 +33,10 @@ public class MainPresenterImpl <V extends MainView, I extends MainInteractor>
                     }
                 );
     }
+
+    @Override
+    public void onRecyclerClicked(String url) {
+        if (!isViewAttached()) return;
+        getView().startChromeTab(url);
+    }
 }

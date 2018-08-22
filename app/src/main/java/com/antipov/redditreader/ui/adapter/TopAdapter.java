@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,14 +22,18 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.antipov.redditreader.utils.common.Const.BASE_URL;
+
 public class TopAdapter extends RecyclerView.Adapter<TopAdapter.ViewHolder> {
 
     private final Context context;
     private final List<Child> model;
+    private final OnRecyclerItemClicked clickListener;
     private final int DESIRED_HEIGHT = 600;
 
-    public TopAdapter(Context context, List<Child> model) {
+    public TopAdapter(Context context, OnRecyclerItemClicked clickListener, List<Child> model) {
         this.model = model;
+        this.clickListener = clickListener;
         this.context = context;
     }
 
@@ -46,6 +49,7 @@ public class TopAdapter extends RecyclerView.Adapter<TopAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         // filling recycler item
         Content post = model.get(i).getData();
+
         // text info
         viewHolder.subReddit.setText(post.getSubredditName());
         viewHolder.userName.setText(context.getString(R.string.username_placeholder,post.getAuthor()));
@@ -86,6 +90,11 @@ public class TopAdapter extends RecyclerView.Adapter<TopAdapter.ViewHolder> {
             // gone thumb if dont have an image
             viewHolder.thumbnail.setVisibility(View.GONE);
         }
+
+        // click listener
+        viewHolder.itemView.setOnClickListener(view -> {
+            clickListener.onRecyclerItemClicked(BASE_URL + post.getPermalink());
+        });
     }
 
     @Override
@@ -103,5 +112,9 @@ public class TopAdapter extends RecyclerView.Adapter<TopAdapter.ViewHolder> {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
+    }
+
+    public interface OnRecyclerItemClicked {
+        void onRecyclerItemClicked(String url);
     }
 }

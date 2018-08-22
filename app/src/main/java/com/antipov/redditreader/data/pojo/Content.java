@@ -36,6 +36,9 @@ public class Content {
     @SerializedName("preview")
     private Preview preview;
 
+    @SerializedName("permalink")
+    private String permalink;
+
     @Nullable
     public List<Resolution> getImagesFromPreview() {
         try {
@@ -58,6 +61,21 @@ public class Content {
         }
     }
 
+    public Preview getPreview() {
+        return preview;
+    }
+
+    public void setPreview(Preview preview) {
+        this.preview = preview;
+    }
+
+    public String getPermalink() {
+        return permalink;
+    }
+
+    public void setPermalink(String permalink) {
+        this.permalink = permalink;
+    }
 
     public String getAuthor() {
         return author;

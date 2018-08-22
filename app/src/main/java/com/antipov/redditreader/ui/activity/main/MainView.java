@@ -9,4 +9,6 @@ public interface MainView extends IBaseView {
     void showError(String err);
 
     void renderList(List<Child> model);
+
+    void startChromeTab(String url);
 }
