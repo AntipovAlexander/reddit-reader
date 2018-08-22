@@ -6,4 +6,6 @@ public interface MainPresenter <V extends MainView, I extends MainInteractor> ex
     void loadTopPosts(int limit);
 
     void onRecyclerClicked(String url);
+
+    void loadNextPage(String after, int pageSize);
 }

@@ -24,7 +24,7 @@ public class MainPresenterImpl <V extends MainView, I extends MainInteractor>
                         this.model = model;
                         if (!isViewAttached()) return;
                         getView().hideLoadingFullscreen();
-                        getView().renderList(model.getData().getChildren());
+                        getView().renderList(model.getData().getChildren(), model.getData().getAfter());
                     },
                     throwable -> {
                         if (!isViewAttached()) return;
@@ -38,5 +38,22 @@ public class MainPresenterImpl <V extends MainView, I extends MainInteractor>
     public void onRecyclerClicked(String url) {
         if (!isViewAttached()) return;
         getView().startChromeTab(url);
+    }
+
+    @Override
+    public void loadNextPage(String after, int pageSize) {
+        if (!isViewAttached()) return;
+        getInteractor().loadNextPage(after, pageSize).subscribe(
+                model -> {
+                    if (!isViewAttached()) return;
+                    getView().addItemsToList(
+                            model.getData().getChildren(),
+                            model.getData().getAfter(),
+                            model.getData().getAfter() == null);
+                },
+                throwable -> {
+                    if (!isViewAttached()) return;
+                }
+        );
     }
 }

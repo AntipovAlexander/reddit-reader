@@ -10,8 +10,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Arrays;
-
 import rx.Observable;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -43,7 +41,7 @@ public class MainPresenterImplTest {
                 .loadTopPosts(limit);
         presenter.loadTopPosts(limit);
         Mockito.verify(mockedView).showLoadingFullscreen();
-        Mockito.verify(mockedView).renderList(ArgumentMatchers.anyList());
+        Mockito.verify(mockedView).renderList(ArgumentMatchers.anyList(), model.getData().getAfter());
         Mockito.verify(mockedView).hideLoadingFullscreen();
         Mockito.verifyNoMoreInteractions(mockedView);
     }

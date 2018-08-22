@@ -8,7 +8,9 @@ import java.util.List;
 public interface MainView extends IBaseView {
     void showError(String err);
 
-    void renderList(List<Child> model);
+    void renderList(List<Child> model, String after);
 
     void startChromeTab(String url);
+
+    void addItemsToList(List<Child> model, String after, boolean lastPage);
 }

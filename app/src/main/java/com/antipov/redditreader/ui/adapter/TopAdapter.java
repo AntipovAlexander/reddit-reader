@@ -2,6 +2,7 @@ package com.antipov.redditreader.ui.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -28,18 +29,23 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.antipov.redditreader.utils.common.Const.BASE_URL;
+import static com.antipov.redditreader.utils.common.Const.PAGE_SIZE;
 
 public class TopAdapter extends RecyclerView.Adapter<TopAdapter.ViewHolder> {
 
     private final Context context;
     private final List<Child> model;
-    private final OnRecyclerItemClicked clickListener;
+    private final TopAdapterListener clickListener;
     private final int DESIRED_HEIGHT = 600;
+    private String after;
+    private boolean isLastPage = false;
+    private boolean isLoading = false;
 
-    public TopAdapter(Context context, OnRecyclerItemClicked clickListener, List<Child> model) {
+    public TopAdapter(Context context, TopAdapterListener clickListener, List<Child> model, String after) {
         this.model = model;
         this.clickListener = clickListener;
         this.context = context;
+        this.after = after;
     }
 
     @NonNull
@@ -114,6 +120,38 @@ public class TopAdapter extends RecyclerView.Adapter<TopAdapter.ViewHolder> {
         return model.size();
     }
 
+    @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int visibleItemCount = layoutManager.getChildCount();
+                int totalItemCount = layoutManager.getItemCount();
+                int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+                if (!isLoading && !isLastPage) {
+                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+                            && firstVisibleItemPosition >= 0
+                            && totalItemCount >= PAGE_SIZE) {
+                        isLoading = true;
+                        clickListener.onNextPageRequired(after);
+                    }
+                }
+            }
+        });
+    }
+
+    public void addItems(List<Child> model, String after, boolean isLastPage) {
+        this.isLoading = false;
+        this.isLastPage = isLastPage;
+        this.after = after;
+        this.model.addAll(model);
+        notifyItemRangeInserted(this.model.size() - model.size(), model.size());
+
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.tv_subreddit) TextView subReddit;
         @BindView(R.id.tv_user) TextView userName;
@@ -129,7 +167,9 @@ public class TopAdapter extends RecyclerView.Adapter<TopAdapter.ViewHolder> {
         }
     }
 
-    public interface OnRecyclerItemClicked {
+    public interface TopAdapterListener {
         void onRecyclerItemClicked(String url);
+
+        void onNextPageRequired(String after);
     }
 }

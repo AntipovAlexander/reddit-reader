@@ -16,6 +16,6 @@ import rx.Observable;
 public interface Api {
 
     @GET("top.json")
-    Observable<Top> getTop(@Query("limit") int limit);
+    Observable<Top> getTop(@Query("limit") int limit, @Query("after") String after);
 }
 

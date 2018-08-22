@@ -28,4 +28,13 @@ public class MainInteractorImpl extends BaseInteractor implements MainInteractor
                 .observeOn(ui())
                 .retry(Const.RETRY_COUNT);
     }
+
+    @Override
+    public Observable<Top> loadNextPage(String after, int pageSize) {
+        return  repository
+                .getPageAfter(after, pageSize)
+                .subscribeOn(newThread())
+                .observeOn(ui())
+                .retry(Const.RETRY_COUNT);
+    }
 }

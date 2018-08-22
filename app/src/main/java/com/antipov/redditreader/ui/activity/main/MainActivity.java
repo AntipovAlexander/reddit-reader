@@ -20,7 +20,9 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends BaseActivity implements MainView, TopAdapter.OnRecyclerItemClicked {
+import static com.antipov.redditreader.utils.common.Const.PAGE_SIZE;
+
+public class MainActivity extends BaseActivity implements MainView, TopAdapter.TopAdapterListener {
 
     @Inject
     MainPresenter<MainView, MainInteractor> presenter;
@@ -29,7 +31,7 @@ public class MainActivity extends BaseActivity implements MainView, TopAdapter.O
     @BindView(R.id.rv_tops) RecyclerView recyclerTop;
     @BindView(R.id.toolbar) Toolbar toolbar;
 
-    private TopAdapter mAdapter;
+    private TopAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +39,7 @@ public class MainActivity extends BaseActivity implements MainView, TopAdapter.O
         super.onCreate(savedInstanceState);
         getComponent().inject(this);
         presenter.attachView(this);
-        presenter.loadTopPosts(10);
+        presenter.loadTopPosts(PAGE_SIZE);
     }
 
     @Override
@@ -79,12 +81,12 @@ public class MainActivity extends BaseActivity implements MainView, TopAdapter.O
     }
 
     @Override
-    public void renderList(List<Child> model) {
+    public void renderList(List<Child> model, String after) {
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         recyclerTop.setLayoutManager(mLayoutManager);
-        mAdapter = new TopAdapter(this, this, model);
+        adapter = new TopAdapter(this, this, model, after);
         recyclerTop.setLayoutManager(mLayoutManager);
-        recyclerTop.setAdapter(mAdapter);
+        recyclerTop.setAdapter(adapter);
     }
 
     @Override
@@ -98,11 +100,21 @@ public class MainActivity extends BaseActivity implements MainView, TopAdapter.O
     }
 
     @Override
+    public void onNextPageRequired(String after) {
+        presenter.loadNextPage(after, PAGE_SIZE);
+    }
+
+    @Override
     public void startChromeTab(String url) {
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
         builder.setToolbarColor(getResources().getColor(R.color.primaryColor));
         CustomTabsIntent customTabsIntent = builder.build();
         customTabsIntent.launchUrl(this, Uri.parse(url));
+    }
+
+    @Override
+    public void addItemsToList(List<Child> model, String after, boolean lastPage) {
+        adapter.addItems(model, after, lastPage);
     }
 
     @Override

@@ -9,7 +9,10 @@ import rx.Observable;
 
 public class TopPostsRepository {
     public Observable<Top> getTopPosts(int limit) {
-        return RetrofitUtils.getApi().create(Api.class).getTop(limit);
+        return RetrofitUtils.getApi().create(Api.class).getTop(limit, null);
     }
 
+    public Observable<Top> getPageAfter(String after, int pageSize) {
+        return RetrofitUtils.getApi().create(Api.class).getTop(pageSize, after);
+    }
 }
