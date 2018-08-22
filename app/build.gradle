@@ -65,6 +65,9 @@ dependencies {
     // pretty time
     implementation "org.ocpsoft.prettytime:prettytime:$rootProject.prettyTime"
 
+    implementation "org.mockito:mockito-core:$rootProject.mockito"
+    androidTestImplementation "org.mockito:mockito-android:$rootProject.mockito"
+
     // material dialog
     implementation("com.afollestad.material-dialogs:$rootProject.materialDialogCore") {
         // excluding to resolve transitive dependencies conflicts
