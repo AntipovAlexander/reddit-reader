@@ -16,12 +16,12 @@ import rx.Observable;
 public class MainPresenterImplTest {
 
     @Mock
-    MainView mockedView;
+    private MainView mockedView;
 
     @Mock
-    MainInteractor mockedInteractor;
+    private MainInteractor mockedInteractor;
 
-    MainPresenter<MainView, MainInteractor> presenter;
+    private MainPresenter<MainView, MainInteractor> presenter;
 
     @Before
     public void setUp(){
@@ -63,6 +63,10 @@ public class MainPresenterImplTest {
         Mockito.verifyNoMoreInteractions(mockedView);
     }
 
+
+    /**
+     * recycler click test
+     */
     @Test
     public void onRecyclerClicked() {
         String url = "https://www.google.com/";
@@ -70,4 +74,39 @@ public class MainPresenterImplTest {
         Mockito.verify(mockedView).startChromeTab(url);
         Mockito.verifyNoMoreInteractions(mockedView);
     }
+
+    /**
+     * method to test positive scenario with mocked interactor
+     */
+    @Test
+    public void loadNextPagePositive() {
+        int limit = 10;
+        String after = "after";
+        Mockito.doReturn(Observable.just(Top.getForTest()))
+                .when(mockedInteractor)
+                .loadNextPage(after, limit);
+
+        presenter.loadNextPage(after, limit);
+        Mockito.verify(mockedView).addItemsToList(Mockito.anyList(), Mockito.anyString(), Mockito.anyBoolean());
+        Mockito.verifyNoMoreInteractions(mockedView);
+    }
+
+    /**
+     * method to test positive scenario with mocked interactor
+     */
+    @Test
+    public void loadNextPageNegative() {
+        int limit = 10;
+        String after = "after";
+        Mockito.doReturn(Observable.just(new Throwable()))
+                .when(mockedInteractor)
+                .loadNextPage(after, limit);
+
+        presenter.loadNextPage(after, limit);
+        Mockito.verify(mockedView).showMessage(Mockito.anyString());
+        Mockito.verify(mockedView).onPaginationError();
+        Mockito.verifyNoMoreInteractions(mockedView);
+    }
+
+
 }
