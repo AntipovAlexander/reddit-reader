@@ -7,4 +7,6 @@
     <string name="username_placeholder">u/%s</string>
     <string name="try_again">Try again</string>
     <string name="error_message">Error was occurred :(\n Tap to retry</string>
+    <string name="offline">Offline mode</string>
+    <string name="offline_message">You are in ofline mode now. Check your internet connection and pull list to get fresh data.</string>
 </resources>

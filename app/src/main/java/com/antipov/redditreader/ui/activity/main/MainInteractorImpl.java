@@ -3,6 +3,7 @@ package com.antipov.redditreader.ui.activity.main;
 import com.antipov.redditreader.data.pojo.Top;
 import com.antipov.redditreader.data.repository.CacheRepository;
 import com.antipov.redditreader.data.repository.TopPostsRepository;
+import com.antipov.redditreader.db.Cache;
 import com.antipov.redditreader.ui.base.BaseInteractor;
 import com.antipov.redditreader.utils.common.Const;
 import com.antipov.redditreader.utils.rx.SchedulerProvider;
@@ -53,5 +54,13 @@ public class MainInteractorImpl extends BaseInteractor implements MainInteractor
                 .subscribeOn(newThread())
                 .observeOn(ui())
                 .subscribe();
+    }
+
+    @Override
+    public Observable<Cache> getCachedPage() {
+        return cacheRepository
+                .getCache()
+                .subscribeOn(newThread())
+                .observeOn(ui());
     }
 }

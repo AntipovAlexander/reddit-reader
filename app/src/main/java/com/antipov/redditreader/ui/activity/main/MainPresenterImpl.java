@@ -1,6 +1,8 @@
 package com.antipov.redditreader.ui.activity.main;
 
+import com.antipov.redditreader.data.pojo.Top;
 import com.antipov.redditreader.ui.base.BasePresenter;
+import com.antipov.redditreader.utils.NetworkUtils;
 import com.google.gson.Gson;
 
 import javax.inject.Inject;
@@ -24,6 +26,7 @@ public class MainPresenterImpl <V extends MainView, I extends MainInteractor>
         getInteractor()
                 .loadTopPosts(limit)
                 .map(top -> {
+                    // caching request
                     Gson gson = new Gson();
                     getInteractor().cacheRequest(gson.toJson(top));
                     return top;
@@ -35,15 +38,39 @@ public class MainPresenterImpl <V extends MainView, I extends MainInteractor>
                         getView().hideLoadingFullscreen();
                         // rendering list
                         getView().renderList(model.getData().getChildren(), model.getData().getAfter());
-                        // caching request
                     },
                     throwable -> {
                         // in case of error
                         if (!isViewAttached()) return;
                         getView().hideLoadingFullscreen();
-                        getView().showErrorFullScreen(throwable.getMessage());
+                        resolveCache(throwable);
                     }
                 );
+    }
+
+    private void resolveCache(Throwable throwable) {
+        if (getView().isNetworkConnected()){
+            // is network connected, but thrown an error showing error
+            getView().showErrorFullScreen(throwable.getMessage());
+        } else {
+            // if network NOT connected and thrown throwable -
+            // it's means that no internet connection - go into offline mode
+            getInteractor()
+                    .getCachedPage()
+                    .subscribe(
+                            cache -> {
+                                if (!isViewAttached()) return;
+                                Gson gson = new Gson();
+                                Top cacheModel = gson.fromJson(cache.getJson(), Top.class);
+                                getView().renderList(cacheModel.getData().getChildren(), cacheModel.getData().getAfter());
+                                getView().notifyOfflineMode();
+                            },
+                            t -> {
+                                if (!isViewAttached()) return;
+                                getView().onError(t.getMessage());
+                            });
+
+        }
     }
 
     /**
@@ -66,22 +93,30 @@ public class MainPresenterImpl <V extends MainView, I extends MainInteractor>
     @Override
     public void loadNextPage(String after, int pageSize) {
         if (!isViewAttached()) return;
-        getInteractor().loadNextPage(after, pageSize).subscribe(
-                model -> {
-                    // in case of success
-                    if (!isViewAttached()) return;
-                    // updating list
-                    getView().addItemsToList(
-                            model.getData().getChildren(), // new posts
-                            model.getData().getAfter(),    // next page
-                            model.getData().getAfter() == null); // we have new page or not
-                },
-                throwable -> {
-                    // in case of error
-                    if (!isViewAttached()) return;
-                    getView().showMessage(throwable.getMessage());
-                    getView().onPaginationError();
-                }
+        getInteractor()
+                .loadNextPage(after, pageSize)
+                .map(top -> {
+                    // caching request
+                    Gson gson = new Gson();
+                    getInteractor().cacheRequest(gson.toJson(top));
+                    return top;
+                })
+                .subscribe(
+                    model -> {
+                        // in case of success
+                        if (!isViewAttached()) return;
+                        // updating list
+                        getView().addItemsToList(
+                                model.getData().getChildren(), // new posts
+                                model.getData().getAfter(),    // next page
+                                model.getData().getAfter() == null); // we have new page or not
+                    },
+                    throwable -> {
+                        // in case of error
+                        if (!isViewAttached()) return;
+                        getView().showMessage(throwable.getMessage());
+                        getView().onPaginationError();
+                    }
         );
     }
 }

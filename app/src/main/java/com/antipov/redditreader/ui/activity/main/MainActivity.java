@@ -19,6 +19,7 @@ import com.antipov.redditreader.data.pojo.Child;
 import com.antipov.redditreader.db.Cache;
 import com.antipov.redditreader.ui.adapter.TopAdapter;
 import com.antipov.redditreader.ui.base.BaseActivity;
+import com.antipov.redditreader.utils.DialogUtils;
 import com.antipov.redditreader.utils.GlideApp;
 import com.bumptech.glide.Glide;
 
@@ -146,6 +147,19 @@ public class MainActivity extends BaseActivity implements MainView, TopAdapter.T
     @Override
     public void onPaginationError() {
         adapter.onPaginationError();
+    }
+
+    @Override
+    public void notifyOfflineMode() {
+        DialogUtils.createBasicDialog(
+                this,
+                R.string.offline,
+                getString(R.string.offline_message),
+                true,
+                null,
+                 getString(R.string.ok),
+                null)
+        .show();
     }
 
     @Override
