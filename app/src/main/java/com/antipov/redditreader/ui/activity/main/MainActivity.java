@@ -3,6 +3,7 @@ package com.antipov.redditreader.ui.activity.main;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.customtabs.CustomTabsIntent;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -38,6 +39,7 @@ public class MainActivity extends BaseActivity implements MainView, TopAdapter.T
     @BindView(R.id.error_layout) RelativeLayout errorLayout;
     @BindView(R.id.tv_error_text) TextView errorMessageText;
     @BindView(R.id.btn_try_again) Button tryAgain;
+    @BindView(R.id.srl_swipe_refresh) SwipeRefreshLayout refreshLayout;
     @BindView(R.id.toolbar) Toolbar toolbar;
 
     private TopAdapter adapter;
@@ -49,7 +51,16 @@ public class MainActivity extends BaseActivity implements MainView, TopAdapter.T
         super.onCreate(savedInstanceState);
         getComponent().inject(this);
         presenter.attachView(this);
+        initAdapter();
         presenter.loadTopPosts(PAGE_SIZE);
+    }
+
+    private void initAdapter() {
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
+        recyclerTop.setLayoutManager(mLayoutManager);
+        adapter = new TopAdapter(this, this, GlideApp.with(this));
+        recyclerTop.setLayoutManager(mLayoutManager);
+        recyclerTop.setAdapter(adapter);
     }
 
     @Override
@@ -71,6 +82,9 @@ public class MainActivity extends BaseActivity implements MainView, TopAdapter.T
     public void initListeners() {
         tryAgain.setOnClickListener(l -> {
             removeErrors();
+            presenter.loadTopPosts(PAGE_SIZE);
+        });
+        refreshLayout.setOnRefreshListener(() -> {
             presenter.loadTopPosts(PAGE_SIZE);
         });
     }
@@ -100,11 +114,10 @@ public class MainActivity extends BaseActivity implements MainView, TopAdapter.T
      */
     @Override
     public void renderList(List<Child> model, String after) {
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
-        recyclerTop.setLayoutManager(mLayoutManager);
-        adapter = new TopAdapter(this, this, GlideApp.with(this), model, after);
-        recyclerTop.setLayoutManager(mLayoutManager);
-        recyclerTop.setAdapter(adapter);
+        if (refreshLayout.isRefreshing()) {
+            refreshLayout.setRefreshing(false);
+        }
+        adapter.putNewData(model, after);
     }
 
     /**

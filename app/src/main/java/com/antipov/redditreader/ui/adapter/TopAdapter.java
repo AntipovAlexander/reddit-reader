@@ -20,6 +20,7 @@ import com.bumptech.glide.RequestManager;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -46,11 +47,10 @@ public class TopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private boolean isLastPage = false;
     private boolean isLoading = false;
 
-    public TopAdapter(Context context, TopAdapterListener clickListener, RequestManager requestManager, List<Child> model, String after) {
-        this.model = model;
+    public TopAdapter(Context context, TopAdapterListener clickListener, RequestManager requestManager) {
+        this.model = new ArrayList<>();
         this.clickListener = clickListener;
         this.context = context;
-        this.after = after;
         this.requestManager = requestManager;
     }
 
@@ -194,6 +194,25 @@ public class TopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         });
     }
 
+    /**
+     * method for creating "fresh" list with new data
+     * @param model - new data
+     * @param after - next page
+     */
+    public void putNewData(List<Child> model, String after){
+        this.model.clear();
+        this.model.addAll(model);
+        this.after = after;
+        notifyDataSetChanged();
+    }
+
+    /**
+     * add elements to existing data in the list
+     *
+     * @param model - new elements
+     * @param after - next page
+     * @param isLastPage - is this last page
+     */
     public void addItems(List<Child> model, String after, boolean isLastPage) {
         this.isLoading = false;                      // not loading any data
         this.isLastPage = isLastPage;                // is this was last page or not
