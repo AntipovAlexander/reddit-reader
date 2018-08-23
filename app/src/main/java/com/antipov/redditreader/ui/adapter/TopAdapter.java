@@ -28,7 +28,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.antipov.redditreader.utils.common.Const.BASE_URL;
+import static com.antipov.redditreader.utils.common.Const.ERROR_MESSAGE;
 import static com.antipov.redditreader.utils.common.Const.PAGE_SIZE;
+import static com.antipov.redditreader.utils.common.Const.PRELOADER;
 
 /**
  * Adapter for displaying top posts
@@ -56,14 +58,20 @@ public class TopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewLayout) {
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-        View view;
+        View view = inflater.inflate(viewLayout, viewGroup, false);
         switch (viewLayout) {
             // inflating layout
             case R.layout.recycler_item_loader:
-                view = inflater.inflate(viewLayout, viewGroup, false);
                 return new LoaderVH(view);
+            case R.layout.recycler_item_error:
+                ErrorMessageVH errorVh = new ErrorMessageVH(view);
+                errorVh.itemView.setOnClickListener(v -> {
+                    isLoading = false;
+                    this.model.remove(this.model.size() - 1); // removing error message
+                    notifyItemRemoved(this.model.size());        // notifying about removed preloader
+                });
+                return errorVh;
             case R.layout.recycler_item_post:
-                view = inflater.inflate(viewLayout, viewGroup, false);
                 PostVH vh = new PostVH(view);
                 // click listener
                 view.setOnClickListener(v -> {
@@ -84,7 +92,7 @@ public class TopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder vh, int i) {
         // not binding for Loader
-        if (vh instanceof LoaderVH) return;
+        if (!(vh instanceof PostVH)) return;
 
         PostVH viewHolder = (PostVH) vh;
 
@@ -147,10 +155,13 @@ public class TopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public int getItemViewType(int position) {
         // returning layout as view types
-        if (position == model.size() - 1 && isLoading) {
-            return R.layout.recycler_item_loader;
-        } else {
-            return R.layout.recycler_item_post;
+        switch (model.get(position).getKind()) {
+            case PRELOADER:
+                return R.layout.recycler_item_loader;
+            case ERROR_MESSAGE:
+                return R.layout.recycler_item_error;
+            default:
+                return R.layout.recycler_item_post;
         }
     }
 
@@ -173,7 +184,7 @@ public class TopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                                 && firstVisibleItemPosition >= 0
                                 && totalItemCount >= PAGE_SIZE) {
                             isLoading = true;
-                            model.add(new Child());
+                            model.add(new Child(PRELOADER));
                             notifyItemInserted(model.size());
                             clickListener.onNextPageRequired(after);
                         }
@@ -194,6 +205,14 @@ public class TopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 this.model.size() - model.size(),
                 model.size()
         );
+    }
+
+    public void onPaginationError() {
+        // when error happens
+        this.model.remove(this.model.size() - 1); // removing preloader
+        notifyItemRemoved(this.model.size());        // notifying about removed preloader
+        this.model.add(new Child(ERROR_MESSAGE));    // adding error message
+        notifyItemInserted(this.model.size());       // notifying about new element
     }
 
     @Override
@@ -224,6 +243,12 @@ public class TopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     class LoaderVH extends RecyclerView.ViewHolder {
         public LoaderVH(@NonNull View itemView) {
+            super(itemView);
+        }
+    }
+
+    class ErrorMessageVH extends RecyclerView.ViewHolder {
+        public ErrorMessageVH(@NonNull View itemView) {
             super(itemView);
         }
     }

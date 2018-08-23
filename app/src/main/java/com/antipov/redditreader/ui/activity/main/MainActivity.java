@@ -7,7 +7,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
 import com.antipov.redditreader.R;
 import com.antipov.redditreader.data.pojo.Child;
 import com.antipov.redditreader.ui.adapter.TopAdapter;
@@ -31,6 +35,9 @@ public class MainActivity extends BaseActivity implements MainView, TopAdapter.T
 
     @BindView(R.id.fl_progress) FrameLayout progress;
     @BindView(R.id.rv_tops) RecyclerView recyclerTop;
+    @BindView(R.id.error_layout) RelativeLayout errorLayout;
+    @BindView(R.id.tv_error_text) TextView errorMessageText;
+    @BindView(R.id.btn_try_again) Button tryAgain;
     @BindView(R.id.toolbar) Toolbar toolbar;
 
     private TopAdapter adapter;
@@ -62,7 +69,10 @@ public class MainActivity extends BaseActivity implements MainView, TopAdapter.T
 
     @Override
     public void initListeners() {
-
+        tryAgain.setOnClickListener(l -> {
+            removeErrors();
+            presenter.loadTopPosts(PAGE_SIZE);
+        });
     }
 
     @Override
@@ -97,9 +107,30 @@ public class MainActivity extends BaseActivity implements MainView, TopAdapter.T
         recyclerTop.setAdapter(adapter);
     }
 
+    /**
+     * method for showing full screen error
+     *
+     * @param err - displayed error
+     */
     @Override
-    public void showError(String err) {
+    public void showErrorFullScreen(String err) {
+        errorLayout.setVisibility(View.VISIBLE);
+        errorMessageText.setText(err);
+    }
 
+    /**
+     * method for removing error messages from screen if it displayed
+     */
+    @Override
+    public void removeErrors() {
+        if (errorLayout.getVisibility() == View.VISIBLE) {
+            errorLayout.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void onPaginationError() {
+        adapter.onPaginationError();
     }
 
     @Override

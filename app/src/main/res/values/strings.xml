@@ -5,4 +5,6 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="username_placeholder">u/%s</string>
+    <string name="try_again">Try again</string>
+    <string name="error_message">Error was occurred :(\n Tap to retry</string>
 </resources>

@@ -32,8 +32,7 @@ public class MainPresenterImpl <V extends MainView, I extends MainInteractor>
                         // in case of error
                         if (!isViewAttached()) return;
                         getView().hideLoadingFullscreen();
-                        // TODO: implement error handling
-                        getView().showError(throwable.getMessage());
+                        getView().showErrorFullScreen(throwable.getMessage());
                     }
                 );
     }
@@ -71,7 +70,8 @@ public class MainPresenterImpl <V extends MainView, I extends MainInteractor>
                 throwable -> {
                     // in case of error
                     if (!isViewAttached()) return;
-                    // todo: implement
+                    getView().showMessage(throwable.getMessage());
+                    getView().onPaginationError();
                 }
         );
     }

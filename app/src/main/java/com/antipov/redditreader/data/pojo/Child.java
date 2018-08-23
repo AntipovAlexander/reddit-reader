@@ -9,6 +9,13 @@ public class Child {
     @SerializedName("data")
     private Content data;
 
+    public Child() {
+    }
+
+    public Child(String kind) {
+        this.kind = kind;
+    }
+
     public String getKind() {
         return kind;
     }

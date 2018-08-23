@@ -19,4 +19,14 @@
         android:layout_below="@id/image"
         android:text="Some error occured"/>
 
+    <Button
+        android:id="@+id/btn_try_again"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_error_text"
+        android:layout_centerHorizontal="true"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:textColor="@color/secondaryColor"
+        android:text="@string/try_again"/>
+
 </RelativeLayout>
