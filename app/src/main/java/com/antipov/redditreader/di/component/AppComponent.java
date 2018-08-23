@@ -2,6 +2,7 @@ package com.antipov.redditreader.di.component;
 
 import android.content.Context;
 
+import com.antipov.redditreader.data.repository.CacheRepository;
 import com.antipov.redditreader.data.repository.TopPostsRepository;
 import com.antipov.redditreader.di.module.AppModule;
 import com.antipov.redditreader.di.ApplicationContext;
@@ -25,5 +26,7 @@ public interface AppComponent {
     SchedulerProvider schedulerProvider();
 
     TopPostsRepository topPostsRepository();
+
+    CacheRepository cacheRepository();
 }
 

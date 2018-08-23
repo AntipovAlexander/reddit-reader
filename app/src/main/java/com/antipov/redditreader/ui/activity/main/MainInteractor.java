@@ -9,4 +9,6 @@ public interface MainInteractor extends IBaseInteractor {
     Observable<Top> loadTopPosts(int limit);
 
     Observable<Top> loadNextPage(String after, int pageSize);
+
+    void cacheRequest(String request);
 }

@@ -14,7 +14,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.antipov.redditreader.R;
+import com.antipov.redditreader.app.App;
 import com.antipov.redditreader.data.pojo.Child;
+import com.antipov.redditreader.db.Cache;
 import com.antipov.redditreader.ui.adapter.TopAdapter;
 import com.antipov.redditreader.ui.base.BaseActivity;
 import com.antipov.redditreader.utils.GlideApp;

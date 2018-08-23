@@ -1,6 +1,7 @@
 package com.antipov.redditreader.ui.activity.main;
 
 import com.antipov.redditreader.ui.base.BasePresenter;
+import com.google.gson.Gson;
 
 import javax.inject.Inject;
 
@@ -20,13 +21,21 @@ public class MainPresenterImpl <V extends MainView, I extends MainInteractor>
     public void loadTopPosts(int limit) {
         if (!isViewAttached()) return;
         getView().showLoadingFullscreen();
-        getInteractor().loadTopPosts(limit).subscribe(
+        getInteractor()
+                .loadTopPosts(limit)
+                .map(top -> {
+                    Gson gson = new Gson();
+                    getInteractor().cacheRequest(gson.toJson(top));
+                    return top;
+                })
+                .subscribe(
                     model -> {
                         // in case of success
                         if (!isViewAttached()) return;
                         getView().hideLoadingFullscreen();
                         // rendering list
                         getView().renderList(model.getData().getChildren(), model.getData().getAfter());
+                        // caching request
                     },
                     throwable -> {
                         // in case of error

@@ -3,8 +3,10 @@ package com.antipov.redditreader.di.module;
 import android.app.Application;
 import android.content.Context;
 
+import com.antipov.redditreader.data.repository.CacheRepository;
 import com.antipov.redditreader.data.repository.TopPostsRepository;
-import com.antipov.redditreader.data.repository.TopPostsRepositoryImpl;
+import com.antipov.redditreader.data.repository.impl.CacheRepositoryImpl;
+import com.antipov.redditreader.data.repository.impl.TopPostsRepositoryImpl;
 import com.antipov.redditreader.di.ApplicationContext;
 import com.antipov.redditreader.utils.rx.AppSchedulerProvider;
 import com.antipov.redditreader.utils.rx.SchedulerProvider;
@@ -43,5 +45,10 @@ public class AppModule {
     @Provides
     public TopPostsRepository provideTopPostsRepository() {
         return new TopPostsRepositoryImpl();
+    }
+
+    @Provides
+    public CacheRepository provideCacheRepository() {
+        return new CacheRepositoryImpl(mApplication);
     }
 }

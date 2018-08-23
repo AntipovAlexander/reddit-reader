@@ -1,9 +1,10 @@
-package com.antipov.redditreader.data.repository;
+package com.antipov.redditreader.data.repository.impl;
 
 
 import com.antipov.redditreader.api.Api;
 import com.antipov.redditreader.api.RetrofitUtils;
 import com.antipov.redditreader.data.pojo.Top;
+import com.antipov.redditreader.data.repository.TopPostsRepository;
 
 import rx.Observable;
 
