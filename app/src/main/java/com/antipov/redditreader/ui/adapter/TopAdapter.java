@@ -30,6 +30,9 @@ import butterknife.ButterKnife;
 import static com.antipov.redditreader.utils.common.Const.BASE_URL;
 import static com.antipov.redditreader.utils.common.Const.PAGE_SIZE;
 
+/**
+ * Adapter for displaying top posts
+ */
 public class TopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final Context context;
@@ -55,11 +58,12 @@ public class TopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
         View view;
         switch (viewLayout) {
+            // inflating layout
             case R.layout.recycler_item_loader:
-                view = inflater.inflate(R.layout.recycler_item_loader, viewGroup, false);
+                view = inflater.inflate(viewLayout, viewGroup, false);
                 return new LoaderVH(view);
             case R.layout.recycler_item_post:
-                view = inflater.inflate(R.layout.recycler_item_post, viewGroup, false);
+                view = inflater.inflate(viewLayout, viewGroup, false);
                 PostVH vh = new PostVH(view);
                 // click listener
                 view.setOnClickListener(v -> {
@@ -180,13 +184,16 @@ public class TopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void addItems(List<Child> model, String after, boolean isLastPage) {
-        this.isLoading = false;
-        this.isLastPage = isLastPage;
-        this.after = after;
-        this.model.remove(this.model.size() - 1);
-        notifyItemRemoved(this.model.size() + 1);
-        this.model.addAll(model);
-        notifyItemRangeInserted(this.model.size() - model.size(), model.size());
+        this.isLoading = false;                      // not loading any data
+        this.isLastPage = isLastPage;                // is this was last page or not
+        this.after = after;                          // link to the next page
+        this.model.remove(this.model.size() - 1); // removing preloader
+        notifyItemRemoved(this.model.size() + 1); // notifying about removed preloader
+        this.model.addAll(model);                    // add new data
+        notifyItemRangeInserted(                     // notifying about new data
+                this.model.size() - model.size(),
+                model.size()
+        );
     }
 
     @Override

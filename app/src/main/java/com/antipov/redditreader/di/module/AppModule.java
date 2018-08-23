@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.antipov.redditreader.data.repository.TopPostsRepository;
+import com.antipov.redditreader.data.repository.TopPostsRepositoryImpl;
 import com.antipov.redditreader.di.ApplicationContext;
 import com.antipov.redditreader.utils.rx.AppSchedulerProvider;
 import com.antipov.redditreader.utils.rx.SchedulerProvider;
@@ -41,6 +42,6 @@ public class AppModule {
 
     @Provides
     public TopPostsRepository provideTopPostsRepository() {
-        return new TopPostsRepository();
+        return new TopPostsRepositoryImpl();
     }
 }

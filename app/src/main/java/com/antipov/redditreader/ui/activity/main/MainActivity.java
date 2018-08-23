@@ -37,6 +37,7 @@ public class MainActivity extends BaseActivity implements MainView, TopAdapter.T
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // remove theme with splash screen image
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         getComponent().inject(this);
@@ -82,6 +83,11 @@ public class MainActivity extends BaseActivity implements MainView, TopAdapter.T
         progress.setVisibility(View.GONE);
     }
 
+    /**
+     * method for displaying top posts list
+     * @param model - data
+     * @param after - next page
+     */
     @Override
     public void renderList(List<Child> model, String after) {
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
@@ -106,6 +112,10 @@ public class MainActivity extends BaseActivity implements MainView, TopAdapter.T
         presenter.loadNextPage(after, PAGE_SIZE);
     }
 
+    /**
+     * method for opening top post in new Chrome Tab
+     * @param url - url to post
+     */
     @Override
     public void startChromeTab(String url) {
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
@@ -114,6 +124,13 @@ public class MainActivity extends BaseActivity implements MainView, TopAdapter.T
         customTabsIntent.launchUrl(this, Uri.parse(url));
     }
 
+    /**
+     * Adding new page to list
+     *
+     * @param model - data
+     * @param after - next page
+     * @param lastPage - is this last page or not
+     */
     @Override
     public void addItemsToList(List<Child> model, String after, boolean lastPage) {
         adapter.addItems(model, after, lastPage);
