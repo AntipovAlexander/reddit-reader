@@ -1,11 +1,8 @@
 package com.antipov.redditreader.di.component;
 
-import android.content.Context;
-
 import com.antipov.redditreader.data.repository.CacheRepository;
 import com.antipov.redditreader.data.repository.TopPostsRepository;
 import com.antipov.redditreader.di.module.AppModule;
-import com.antipov.redditreader.di.ApplicationContext;
 import com.antipov.redditreader.utils.rx.SchedulerProvider;
 
 import dagger.Component;
@@ -20,9 +17,6 @@ import dagger.Component;
 public interface AppComponent {
 
     // provide dependencies from app module to dependent components
-    @ApplicationContext
-    Context context();
-
     SchedulerProvider schedulerProvider();
 
     TopPostsRepository topPostsRepository();

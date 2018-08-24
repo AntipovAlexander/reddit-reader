@@ -1,13 +1,11 @@
 package com.antipov.redditreader.di.module;
 
 import android.app.Application;
-import android.content.Context;
 
 import com.antipov.redditreader.data.repository.CacheRepository;
 import com.antipov.redditreader.data.repository.TopPostsRepository;
 import com.antipov.redditreader.data.repository.impl.CacheRepositoryImpl;
 import com.antipov.redditreader.data.repository.impl.TopPostsRepositoryImpl;
-import com.antipov.redditreader.di.ApplicationContext;
 import com.antipov.redditreader.utils.rx.AppSchedulerProvider;
 import com.antipov.redditreader.utils.rx.SchedulerProvider;
 
@@ -29,12 +27,6 @@ public class AppModule {
     public AppModule(Application application, AppSchedulerProvider appSchedulerProvider) {
         this.mScheduleProvider = appSchedulerProvider;
         this.mApplication = application;
-    }
-
-    @Provides
-    @ApplicationContext
-    Context provideApplicationContext() {
-        return mApplication;
     }
 
     @Provides

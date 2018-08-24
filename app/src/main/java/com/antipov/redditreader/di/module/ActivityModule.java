@@ -1,9 +1,8 @@
 package com.antipov.redditreader.di.module;
 
 import android.app.Activity;
-import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
-import com.antipov.redditreader.di.ActivityContext;
+
 import com.antipov.redditreader.ui.activity.main.MainInteractor;
 import com.antipov.redditreader.ui.activity.main.MainInteractorImpl;
 import com.antipov.redditreader.ui.activity.main.MainPresenter;
@@ -25,15 +24,6 @@ public class ActivityModule {
 
     public ActivityModule(AppCompatActivity activity) {
         this.activity = activity;
-    }
-
-    /**
-     * @return activity context
-     */
-    @Provides
-    @ActivityContext
-    Context provideActivityContext(){
-        return activity;
     }
 
 
