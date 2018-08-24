@@ -78,7 +78,7 @@ public class TopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             int pos = vh.getAdapterPosition();
                             if (pos != RecyclerView.NO_POSITION) {
                                 clickListener.onRecyclerItemClicked(
-                                        BASE_URL + model.get(pos).getData().getPermalink()
+                                        getUrl(pos)
                                 );
                             }
                         }
@@ -243,6 +243,10 @@ public class TopAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             holder.thumbnail.setImageDrawable(null);
         }
         super.onViewRecycled(vh);
+    }
+
+    public String getUrl(int position) {
+        return BASE_URL + model.get(position).getData().getPermalink();
     }
 
     class PostVH extends RecyclerView.ViewHolder {

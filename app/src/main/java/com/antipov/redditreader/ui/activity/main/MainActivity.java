@@ -1,5 +1,7 @@
 package com.antipov.redditreader.ui.activity.main;
 
+import android.content.Intent;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.customtabs.CustomTabsIntent;
@@ -7,6 +9,8 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.Display;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -17,6 +21,7 @@ import com.antipov.redditreader.R;
 import com.antipov.redditreader.app.App;
 import com.antipov.redditreader.data.pojo.Child;
 import com.antipov.redditreader.db.Cache;
+import com.antipov.redditreader.ui.adapter.SwipeController;
 import com.antipov.redditreader.ui.adapter.TopAdapter;
 import com.antipov.redditreader.ui.base.BaseActivity;
 import com.antipov.redditreader.utils.DialogUtils;
@@ -32,7 +37,7 @@ import butterknife.ButterKnife;
 
 import static com.antipov.redditreader.utils.common.Const.PAGE_SIZE;
 
-public class MainActivity extends BaseActivity implements MainView, TopAdapter.TopAdapterListener {
+public class MainActivity extends BaseActivity implements MainView, TopAdapter.TopAdapterListener, SwipeController.ShareListener {
 
     @Inject
     MainPresenter<MainView, MainInteractor> presenter;
@@ -60,6 +65,14 @@ public class MainActivity extends BaseActivity implements MainView, TopAdapter.T
 
     private void initAdapter() {
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
+        // get screen width for swipe controller
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int width = size.x;
+        // creating swipe controller
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeController(this, width));
+        itemTouchHelper.attachToRecyclerView(recyclerTop);
         recyclerTop.setLayoutManager(mLayoutManager);
         adapter = new TopAdapter(this, this, GlideApp.with(this));
         recyclerTop.setLayoutManager(mLayoutManager);
@@ -108,6 +121,16 @@ public class MainActivity extends BaseActivity implements MainView, TopAdapter.T
     @Override
     public void hideLoadingFullscreen() {
         progress.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onShare(int position) {
+        String url = adapter.getUrl(position);
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_text, url));
+        sendIntent.setType("text/plain");
+        startActivity(sendIntent);
     }
 
     /**
