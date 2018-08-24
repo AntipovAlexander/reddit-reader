@@ -70,10 +70,12 @@ dependencies {
     // pretty time
     implementation "org.ocpsoft.prettytime:prettytime:$rootProject.prettyTime"
 
+    // mockito
     implementation "org.mockito:mockito-core:$rootProject.mockito"
     androidTestImplementation "org.mockito:mockito-android:$rootProject.mockito"
 
-    implementation 'org.greenrobot:greendao:3.2.2'
+    // green dao
+    implementation "org.greenrobot:greendao:$rootProject.greenDao"
 
     // material dialog
     implementation("com.afollestad.material-dialogs:$rootProject.materialDialogCore") {

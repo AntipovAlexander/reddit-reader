@@ -44,6 +44,7 @@ ext {
     espressoCore = '3.0.2'
     mockito = '2.7.1'
     glide = '4.8.0'
+    greenDao = '3.2.2'
     prettyTime = '4.0.1.Final'
     materialDialogCore = 'core:0.9.6.0'
     materialDialogCommon = 'commons:0.9.6.0'
