@@ -2,7 +2,6 @@ package com.antipov.redditreader.ui.activity.main;
 
 import com.antipov.redditreader.data.pojo.Top;
 import com.antipov.redditreader.ui.base.BasePresenter;
-import com.antipov.redditreader.utils.NetworkUtils;
 import com.google.gson.Gson;
 
 import javax.inject.Inject;
@@ -48,7 +47,13 @@ public class MainPresenterImpl <V extends MainView, I extends MainInteractor>
                 );
     }
 
+    /**
+     * Method for resolving: go to offline or display error
+     *
+     * @param throwable - throwable from observer
+     */
     private void resolveCache(Throwable throwable) {
+        if (!isViewAttached()) return;
         if (getView().isNetworkConnected()){
             // is network connected, but thrown an error showing error
             getView().showErrorFullScreen(throwable.getMessage());
@@ -67,7 +72,8 @@ public class MainPresenterImpl <V extends MainView, I extends MainInteractor>
                             },
                             t -> {
                                 if (!isViewAttached()) return;
-                                getView().onError(t.getMessage());
+                                // in case of error returning first throwable error
+                                getView().showErrorFullScreen(throwable.getMessage());
                             });
 
         }

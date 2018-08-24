@@ -1,6 +1,8 @@
 package com.antipov.redditreader.ui.activity.main;
 
 import com.antipov.redditreader.data.pojo.Top;
+import com.antipov.redditreader.db.Cache;
+import com.google.gson.Gson;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -53,6 +55,10 @@ public class MainPresenterImplTest {
     public void loadTopPostsNegative() {
         int limit = 10;
 
+        Mockito.doReturn(true)
+                .when(mockedView)
+                .isNetworkConnected();
+
         Mockito.doReturn(Observable.just(new Throwable()))
                 .when(mockedInteractor)
                 .loadTopPosts(limit);
@@ -60,6 +66,7 @@ public class MainPresenterImplTest {
         Mockito.verify(mockedView).showLoadingFullscreen();
         Mockito.verify(mockedView).showErrorFullScreen(ArgumentMatchers.anyString());
         Mockito.verify(mockedView).hideLoadingFullscreen();
+        Mockito.verify(mockedView).isNetworkConnected();
         Mockito.verifyNoMoreInteractions(mockedView);
     }
 
@@ -108,5 +115,58 @@ public class MainPresenterImplTest {
         Mockito.verifyNoMoreInteractions(mockedView);
     }
 
+    /**
+     * Positive scenario - internet is disabled on device
+     */
+    @Test
+    public void testOfflinePositive() {
+        int limit = 10;
+        Mockito.doReturn(false)
+                .when(mockedView)
+                .isNetworkConnected();
 
+        Mockito.doReturn(Observable.just(new Throwable()))
+                .when(mockedInteractor)
+                .loadTopPosts(limit);
+
+        Top model = Top.getForTest();
+        Gson gson = new Gson();
+        Cache cache = new Cache(gson.toJson(model));
+
+        Mockito.doReturn(Observable.just(cache))
+                .when(mockedInteractor)
+                .getCachedPage();
+
+        presenter.loadTopPosts(limit);
+
+        Mockito.verify(mockedView).hideLoadingFullscreen();
+        Mockito.verify(mockedView).isNetworkConnected();
+        Mockito.verify(mockedView).renderList(ArgumentMatchers.anyList(), ArgumentMatchers.anyString());
+        Mockito.verify(mockedView).notifyOfflineMode();
+    }
+
+    /**
+     * Negative scenario - error while loading cache
+     */
+    @Test
+    public void testOfflineNegative() {
+        int limit = 10;
+        Mockito.doReturn(false)
+                .when(mockedView)
+                .isNetworkConnected();
+
+        Mockito.doReturn(Observable.just(new Throwable()))
+                .when(mockedInteractor)
+                .loadTopPosts(limit);
+
+        Mockito.doReturn(Observable.just(new Throwable()))
+                .when(mockedInteractor)
+                .getCachedPage();
+
+        presenter.loadTopPosts(limit);
+
+        Mockito.verify(mockedView).hideLoadingFullscreen();
+        Mockito.verify(mockedView).isNetworkConnected();
+        Mockito.verify(mockedView).showErrorFullScreen(ArgumentMatchers.anyString());
+    }
 }

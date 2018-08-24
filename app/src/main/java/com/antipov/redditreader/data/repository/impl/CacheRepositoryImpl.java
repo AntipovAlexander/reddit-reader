@@ -21,10 +21,11 @@ public class CacheRepositoryImpl implements CacheRepository {
     public Observable<Cache> getCache() {
         return Observable.fromCallable(() -> {
             List<Cache> caches = ((App) context).getDaoSession().loadAll(Cache.class);
-            if (caches != null) {
+            if (caches.size() == 0) {
+                throw new UnsupportedOperationException("Cache is empty");
+            } else {
                 return caches.get(0);
             }
-            return null;
         });
     }
 
