@@ -48,7 +48,6 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
         if (getLayoutId() != -1) {
             setContentView(getLayoutId());
         }
-        getExtras();
         initViews();
         initToolbar();
         initListeners();
@@ -167,10 +166,6 @@ public abstract class BaseActivity extends AppCompatActivity implements IBaseVie
      */
     public abstract int getLayoutId();
 
-    /**
-     * Get extras from intent
-     */
-    public abstract void getExtras();
 
     /**
      * Initializing views. Put in the implementation your findViewById() methods

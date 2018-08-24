@@ -74,6 +74,7 @@ public class MainActivity extends BaseActivity implements MainView, TopAdapter.T
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SwipeController(this, width));
         itemTouchHelper.attachToRecyclerView(recyclerTop);
         recyclerTop.setLayoutManager(mLayoutManager);
+        // init adapter
         adapter = new TopAdapter(this, this, GlideApp.with(this));
         recyclerTop.setLayoutManager(mLayoutManager);
         recyclerTop.setAdapter(adapter);
@@ -85,21 +86,18 @@ public class MainActivity extends BaseActivity implements MainView, TopAdapter.T
     }
 
     @Override
-    public void getExtras() {
-
-    }
-
-    @Override
     public void initViews() {
         ButterKnife.bind(this);
     }
 
     @Override
     public void initListeners() {
+        // try again listener
         tryAgain.setOnClickListener(l -> {
             removeErrors();
             presenter.loadTopPosts(PAGE_SIZE);
         });
+        // refresh data listener
         refreshLayout.setOnRefreshListener(() -> {
             presenter.loadTopPosts(PAGE_SIZE);
         });
@@ -123,6 +121,11 @@ public class MainActivity extends BaseActivity implements MainView, TopAdapter.T
         progress.setVisibility(View.GONE);
     }
 
+    /**
+     * Launching share intent
+     *
+     * @param position - position of the shared post
+     */
     @Override
     public void onShare(int position) {
         String url = adapter.getUrl(position);
@@ -167,6 +170,9 @@ public class MainActivity extends BaseActivity implements MainView, TopAdapter.T
         }
     }
 
+    /**
+     *  notify adapter about error while pagination
+     */
     @Override
     public void onPaginationError() {
         adapter.onPaginationError();
